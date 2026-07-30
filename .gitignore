@@ -1,0 +1,73 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDEs and editors
+.idea/
+.vscode/*
+!.vscode/extensions.json
+.cursor/
+.codex/
+.nova/
+.zed/
+
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# General logs
+*.log
+
+## Frontend — START
+# Logs
+/frontend/logs/
+/frontend/npm-debug.log*
+/frontend/yarn-debug.log*
+/frontend/yarn-error.log*
+/frontend/pnpm-debug.log*
+/frontend/lerna-debug.log*
+
+/frontend/node_modules/
+/frontend/dist/
+/frontend/dist-ssr/
+/frontend/coverage/
+/frontend/*.local
+/frontend/*.tsbuildinfo
+/frontend/.eslintcache
+/frontend/*.timestamp-*-*.mjs
+
+# Playwright
+/frontend/test-results/
+/frontend/playwright-report/
+
+# Vitest
+/frontend/__screenshots__/
+## Frontend — END
+
+## Backend — START
+/backend/.env
+/backend/.env.backup
+/backend/.env.production
+
+/backend/.phpactor.json
+/backend/.phpunit.result.cache
+/backend/.phpunit.cache
+/backend/auth.json
+
+/backend/node_modules/
+/backend/vendor/
+
+/backend/public/build/
+/backend/public/fonts-manifest.dev.json
+/backend/public/hot
+/backend/public/storage
+
+/backend/storage/*.key
+/backend/storage/pail
+
+/backend/_ide_helper.php
+/backend/Homestead.json
+/backend/Homestead.yaml
+## Backend — END
