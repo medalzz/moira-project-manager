@@ -15,6 +15,7 @@
         "format": "prettier --write --experimental-cli src/"
     },
     "dependencies": {
+        "axios": "^1.19.0",
         "pinia": "^4.0.2",
         "vue": "^3.5.40",
         "vue-router": "^5.2.0"
@@ -27,7 +28,7 @@
         "@vitejs/plugin-vue": "^6.0.8",
         "@vitest/eslint-plugin": "^1.6.23",
         "@vue/eslint-config-typescript": "^14.9.0",
-        "@vue/test-utils": "^2.4.11",
+        "@vue/test-utils": "2.2.7",
         "@vue/tsconfig": "^0.9.1",
         "eslint": "^10.7.0",
         "eslint-config-prettier": "^10.1.8",
