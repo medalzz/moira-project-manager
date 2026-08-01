@@ -20,6 +20,32 @@ Thumbs.db
 # General logs
 *.log
 
+## Backend (root) — START
+.env
+.env.backup
+.env.production
+
+.phpactor.json
+.phpunit.result.cache
+.phpunit.cache
+auth.json
+
+node_modules/
+vendor/
+
+public/build/
+public/fonts-manifest.dev.json
+public/hot
+public/storage
+
+storage/*.key
+storage/pail
+
+_ide_helper.php
+Homestead.json
+Homestead.yaml
+## Backend (root) — END
+
 ## Frontend — START
 # Logs
 /frontend/logs/
@@ -45,29 +71,3 @@ Thumbs.db
 # Vitest
 /frontend/__screenshots__/
 ## Frontend — END
-
-## Backend — START
-/backend/.env
-/backend/.env.backup
-/backend/.env.production
-
-/backend/.phpactor.json
-/backend/.phpunit.result.cache
-/backend/.phpunit.cache
-/backend/auth.json
-
-/backend/node_modules/
-/backend/vendor/
-
-/backend/public/build/
-/backend/public/fonts-manifest.dev.json
-/backend/public/hot
-/backend/public/storage
-
-/backend/storage/*.key
-/backend/storage/pail
-
-/backend/_ide_helper.php
-/backend/Homestead.json
-/backend/Homestead.yaml
-## Backend — END

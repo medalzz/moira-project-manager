@@ -1,5 +1,13 @@
+x-environment:
+  &default-back-environment
+
+  # Database settings
+  POSTGRES_DB: "moira"
+  POSTGRES_USER: "${POSTGRES_USER}"
+  POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+
 services:
-  nginx:
+  moira-nginx:
     image: nginx:alpine
     ports:
       - "8000:80"
@@ -7,10 +15,10 @@ services:
       - ./backend:/var/www/backend:ro
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
-      php:
+      moira-php:
         condition: service_started
 
-  php:
+  moira-php:
     build:
       context: .
       dockerfile: docker/php/Dockerfile.dev
@@ -22,10 +30,10 @@ services:
       APP_ENV: local
       APP_DEBUG: "true"
     depends_on:
-      postgres:
+      moira-db:
         condition: service_healthy
 
-  node:
+  moira-node:
     image: node:24.18.1-alpine
     working_dir: /var/www/frontend
     ports:
@@ -36,23 +44,24 @@ services:
       - frontend_node_modules:/var/www/frontend/node_modules
     entrypoint: ["/bin/sh", "/usr/local/bin/node-entrypoint-dev"]
     depends_on:
-      - nginx
+      - moira-nginx
 
-  postgres:
+  moira-db:
     image: postgres:18-alpine
     environment:
-      POSTGRES_DB: moira
-      POSTGRES_USER: moira
-      POSTGRES_PASSWORD: moira
+      POSTGRES_DB: "${POSTGRES_DB}"
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U moira -d moira"]
-      interval: 5s
-      timeout: 5s
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 2s
+      timeout: 15s
       retries: 10
+      start_period: 5s
 
 volumes:
   backend_vendor:

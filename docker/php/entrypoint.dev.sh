@@ -19,6 +19,9 @@ composer install \
     --no-interaction \
     --prefer-dist
 
+echo "Running database migrations..."
+php artisan migrate
+
 if [ -f artisan ]; then
     if ! grep -q '^APP_KEY=base64:' .env 2>/dev/null; then
         echo "Generating Laravel application key..."
