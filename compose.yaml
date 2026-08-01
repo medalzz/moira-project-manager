@@ -1,39 +1,38 @@
-x-environment:
-  &default-back-environment
-
-  # Database settings
-  POSTGRES_DB: "moira"
-  POSTGRES_USER: "${POSTGRES_USER}"
-  POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
 
 services:
-  moira-nginx:
+  nginx:
     image: nginx:alpine
     ports:
       - "8000:80"
     volumes:
-      - ./backend:/var/www/backend:ro
+      - .:/var/www/html:ro
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - application-network
     depends_on:
-      moira-php:
+      php:
         condition: service_started
+    restart: unless-stopped
 
-  moira-php:
+  php:
     build:
       context: .
-      dockerfile: docker/php/Dockerfile.dev
-    working_dir: /var/www/backend
+      dockerfile: ./Dockerfile.dev
+    working_dir: /var/www/html/
     volumes:
-      - ./backend:/var/www/backend
-      - backend_vendor:/var/www/backend/vendor
+      - .:/var/www/html
+      - vendor:/var/www/html/vendor
     environment:
-      APP_ENV: local
-      APP_DEBUG: "true"
+      APP_ENV: "${APP_ENV}"
+      APP_DEBUG: "${APP_DEBUG}"
+    networks:
+      - application-network
     depends_on:
-      moira-db:
+      db:
         condition: service_healthy
+    restart: unless-stopped
 
-  moira-node:
+  node:
     image: node:24.18.1-alpine
     working_dir: /var/www/frontend
     ports:
@@ -43,10 +42,13 @@ services:
       - ./docker/node/entrypoint.dev.sh:/usr/local/bin/node-entrypoint-dev:ro
       - frontend_node_modules:/var/www/frontend/node_modules
     entrypoint: ["/bin/sh", "/usr/local/bin/node-entrypoint-dev"]
+    networks:
+      - application-network
     depends_on:
-      - moira-nginx
+      - nginx
+    restart: unless-stopped
 
-  moira-db:
+  db:
     image: postgres:18-alpine
     environment:
       POSTGRES_DB: "${POSTGRES_DB}"
@@ -55,15 +57,22 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql
+      - /database/postgres_data:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
       interval: 2s
       timeout: 15s
       retries: 10
       start_period: 5s
+    networks:
+      - application-network
+    restart: unless-stopped
+
+networks:
+  application-network:
+    driver: bridge
 
 volumes:
-  backend_vendor:
+  vendor:
   frontend_node_modules:
   postgres_data:

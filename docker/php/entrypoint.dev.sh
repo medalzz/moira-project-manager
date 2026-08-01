@@ -2,15 +2,15 @@
 
 set -e
 
-cd /var/www/backend
+cd /var/www/html/
 
 if [ ! -f composer.json ]; then
-    echo "backend/composer.json was not found."
+    echo "composer.json was not found."
     exit 1
 fi
 
 if [ ! -f .env ] && [ -f .env.example ]; then
-    echo "Creating backend/.env from .env.example..."
+    echo "Creating .env from .env.example..."
     cp .env.example .env
 fi
 
