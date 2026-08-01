@@ -1,0 +1,60 @@
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8000:80"
+    volumes:
+      - ./backend:/var/www/backend:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      php:
+        condition: service_started
+
+  php:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile.dev
+    working_dir: /var/www/backend
+    volumes:
+      - ./backend:/var/www/backend
+      - backend_vendor:/var/www/backend/vendor
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  node:
+    image: node:24.18.1-alpine
+    working_dir: /var/www/frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/var/www/frontend
+      - ./docker/node/entrypoint.dev.sh:/usr/local/bin/node-entrypoint-dev:ro
+      - frontend_node_modules:/var/www/frontend/node_modules
+    entrypoint: ["/bin/sh", "/usr/local/bin/node-entrypoint-dev"]
+    depends_on:
+      - nginx
+
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: moira
+      POSTGRES_USER: moira
+      POSTGRES_PASSWORD: moira
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U moira -d moira"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  backend_vendor:
+  frontend_node_modules:
+  postgres_data:

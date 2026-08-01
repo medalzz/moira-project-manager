@@ -1,0 +1,25 @@
+FROM php:8.5.9-fpm-alpine
+
+RUN apk add --no-cache \
+        git \
+        unzip \
+        icu-dev \
+        libpq-dev \
+        libzip-dev \
+        oniguruma-dev \
+    && docker-php-ext-install \
+        intl \
+        mbstring \
+        pdo_pgsql \
+        zip
+
+COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
+
+COPY docker/php/entrypoint.dev.sh /usr/local/bin/php-entrypoint-dev
+
+RUN chmod +x /usr/local/bin/php-entrypoint-dev
+
+WORKDIR /var/www/backend
+
+ENTRYPOINT ["php-entrypoint-dev"]
+CMD ["php-fpm"]
