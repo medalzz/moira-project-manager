@@ -1,0 +1,96 @@
+.PHONY: setup up down restart logs php-shell node-shell pg-shell nginx-shell redis-shell migrate fresh
+
+USER_ID := $(shell id -u)
+GROUP_ID := $(shell id -g)
+
+setup:
+	@echo "Setting up the project..."
+
+	@if [ ! -f composer.json ]; then \
+		echo "Error: composer.json was not found in the project root."; \
+		exit 1; \
+	fi
+
+	@if [ ! -f artisan ]; then \
+		echo "Error: artisan was not found in the project root."; \
+		exit 1; \
+	fi
+
+	@if [ ! -f frontend/package.json ]; then \
+		echo "Error: frontend/package.json was not found."; \
+		exit 1; \
+	fi
+
+	@if [ ! -f .env ]; then \
+		cp .env.example .env; \
+		echo "Created .env from .env.example"; \
+	else \
+		echo ".env already exists"; \
+	fi
+
+	@echo "Building containers..."
+	docker compose build
+
+	@echo "Installing PHP dependencies..."
+	docker compose run --rm --no-deps \
+		--user "$(USER_ID):$(GROUP_ID)" \
+		--entrypoint composer \
+		php install --no-interaction --prefer-dist
+
+	@echo "Installing vue dependencies..."
+	docker compose run --rm --no-deps \
+		--user "$(USER_ID):$(GROUP_ID)" \
+		--entrypoint npm \
+		node install
+
+	@echo "Starting containers..."
+	docker compose up -d
+
+	@if [ -f artisan ]; then \
+		if ! grep -q '^APP_KEY=base64:' .env 2>/dev/null; then \
+			echo "Generating Laravel application key..."; \
+			docker compose exec php php artisan key:generate --force; \
+		else \
+			echo "Application key already exists."; \
+		fi; \
+	fi
+
+	@echo "Running database migrations..."
+	docker compose exec php php artisan migrate
+
+	@echo "Clearing caches..."
+	docker compose exec php php artisan optimize:clear
+
+	@echo "Setup complete."
+up:
+	docker compose up -d --build
+
+down:
+	docker compose down
+
+restart:
+	docker compose restart
+
+logs:
+	docker compose logs -f
+
+php-shell:
+	docker compose exec php sh
+
+node-shell:
+	docker compose exec node sh
+
+pg-shell:
+	docker compose exec db sh
+
+nginx-shell:
+	docker compose exec nginx sh
+
+redis-shell:
+	docker compose exec redis sh
+
+migrate:
+	docker compose exec php php artisan migrate
+
+fresh:
+	docker compose exec php php artisan migrate:fresh --seed

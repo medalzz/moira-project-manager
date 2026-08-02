@@ -20,11 +20,8 @@ RUN apk add --no-cache --virtual .redis-build-deps $PHPIZE_DEPS \
 
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 
-COPY docker/php/entrypoint.dev.sh /usr/local/bin/php-entrypoint-dev
-
-RUN chmod +x /usr/local/bin/php-entrypoint-dev
+RUN git config --global --add safe.directory /var/www/html
 
 WORKDIR /var/www/html/
 
-ENTRYPOINT ["php-entrypoint-dev"]
 CMD ["php-fpm"]
