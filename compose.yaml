@@ -21,7 +21,6 @@ services:
     working_dir: /var/www/html/
     volumes:
       - .:/var/www/html
-      - vendor:/var/www/html/vendor
     environment:
       APP_ENV: "${APP_ENV}"
       APP_DEBUG: "${APP_DEBUG}"
@@ -73,6 +72,5 @@ networks:
     driver: bridge
 
 volumes:
-  vendor:
   frontend_node_modules:
   postgres_data:
