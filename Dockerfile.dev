@@ -7,16 +7,12 @@ ARG PHP_SWOOLE_VERSION=5.3.4
 
 RUN apk update
 
-# install supervisor
-RUN apk add --no-cache supervisor
-
 # install general php dependencies
 RUN apk add --no-cache \
     zip \
     unzip \
     curl \
     ca-certificates \
-    supervisor \
     nano \
     bind-tools \
     icu-libs \
@@ -59,6 +55,9 @@ RUN apk del .php-build-deps
 
 # install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# # use production php.ini settings
+# RUN cp /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 
 # clean tmp files
 RUN rm -rf /tmp/* /var/tmp/*
