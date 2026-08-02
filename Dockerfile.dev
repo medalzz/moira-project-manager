@@ -1,27 +1,69 @@
-FROM php:8.5.9-fpm-alpine
+ARG PHP_VERSION=8.5.9
 
+FROM php:${PHP_VERSION}-fpm-alpine
+
+ARG PHP_REDIS_VERSION=6.3.0
+ARG PHP_SWOOLE_VERSION=5.3.4
+
+RUN apk update
+
+# install supervisor
+RUN apk add --no-cache supervisor
+
+# install general php dependencies
 RUN apk add --no-cache \
-        git \
-        unzip \
+    zip \
+    unzip \
+    curl \
+    ca-certificates \
+    supervisor \
+    nano \
+    bind-tools \
+    icu-libs \
+    libpq \
+    libzip \
+    oniguruma \
+    libpng \
+    libxml2
+
+# install php build dependencies & php extensions
+RUN apk add --no-cache --virtual .php-build-deps \
+        $PHPIZE_DEPS \
         icu-dev \
         libpq-dev \
         libzip-dev \
         oniguruma-dev \
+        libpng-dev \
+        libxml2-dev \
     && docker-php-ext-install \
+        zip \
         intl \
         mbstring \
+        pgsql \
         pdo_pgsql \
-        zip
-        
-RUN apk add --no-cache --virtual .redis-build-deps $PHPIZE_DEPS \
-    && pecl install redis \
-    && docker-php-ext-enable redis \
-    && apk del .redis-build-deps
+        simplexml \
+        xml \
+        pcntl \
+        gd
 
-COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
+# install redis
+RUN pecl install redis-${PHP_REDIS_VERSION} \
+    && docker-php-ext-enable redis
 
-RUN git config --global --add safe.directory /var/www/html
+# # install swoole
+# RUN pecl install swoole-${PHP_SWOOLE_VERSION} \
+#     && docker-php-ext-enable swoole
 
-WORKDIR /var/www/html/
+#delete php build dependencies
+RUN apk del .php-build-deps
+
+# install composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# clean tmp files
+RUN rm -rf /tmp/* /var/tmp/*
+
+# set working directory
+WORKDIR /var/www/html
 
 CMD ["php-fpm"]
