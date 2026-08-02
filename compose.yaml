@@ -30,6 +30,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     restart: unless-stopped
 
   node:
@@ -80,6 +82,9 @@ services:
       interval: 2s
       timeout: 15s
       retries: 10
+    networks:
+      - application-network
+    restart: unless-stopped
 
 networks:
   application-network:
