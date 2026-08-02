@@ -2,6 +2,7 @@
 services:
   nginx:
     image: nginx:alpine
+    working_dir: /var/www/html/
     ports:
       - "8000:80"
     volumes:
@@ -53,6 +54,7 @@ services:
       POSTGRES_DB: "${POSTGRES_DB}"
       POSTGRES_USER: "${POSTGRES_USER}"
       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+    working_dir: /var/lib/postgresql
     ports:
       - "5432:5432"
     volumes:
