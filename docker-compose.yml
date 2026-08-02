@@ -8,6 +8,7 @@ services:
     volumes:
       - .:/var/www/html:ro
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      # - ./docker/supervisord/supervisord.conf:/etc/supervisord.conf:ro
     networks:
       - application-network
     depends_on:
