@@ -19,7 +19,7 @@ COPY docker/php/entrypoint.dev.sh /usr/local/bin/php-entrypoint-dev
 
 RUN chmod +x /usr/local/bin/php-entrypoint-dev
 
-WORKDIR /var/www/backend
+WORKDIR /var/www/html/
 
 ENTRYPOINT ["php-entrypoint-dev"]
 CMD ["php-fpm"]
