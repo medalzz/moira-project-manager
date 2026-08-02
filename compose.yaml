@@ -40,7 +40,6 @@ services:
     volumes:
       - ./frontend:/var/www/frontend
       - ./docker/node/entrypoint.dev.sh:/usr/local/bin/node-entrypoint-dev:ro
-      - frontend_node_modules:/var/www/frontend/node_modules
     entrypoint: ["/bin/sh", "/usr/local/bin/node-entrypoint-dev"]
     networks:
       - application-network
@@ -74,5 +73,4 @@ networks:
     driver: bridge
 
 volumes:
-  frontend_node_modules:
   postgres_data:
