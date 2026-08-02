@@ -68,9 +68,23 @@ services:
       - application-network
     restart: unless-stopped
 
+  redis:
+    image: redis:8-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 15s
+      retries: 10
+
 networks:
   application-network:
     driver: bridge
 
 volumes:
   postgres_data:
+  redis_data:
