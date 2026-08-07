@@ -8,6 +8,8 @@ services:
       - "8000:80"
     volumes:
       - .:/var/www/html:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     networks:
       - application-network
     depends_on:
@@ -88,5 +90,4 @@ networks:
     driver: bridge
 
 volumes:
-  postgres_data:
   redis_data:

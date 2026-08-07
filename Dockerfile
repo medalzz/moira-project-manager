@@ -66,13 +66,12 @@ WORKDIR /var/www/html
 
 CMD ["php-fpm"]
 
-
 # --------------------------------------------------
 # Nginx
 # --------------------------------------------------
 FROM nginx:${NGINX_VERSION}-alpine AS nginx
 
-COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
-COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
+# COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
+# COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
 
 WORKDIR /var/www/html
