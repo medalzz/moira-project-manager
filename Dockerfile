@@ -58,9 +58,6 @@ RUN apk del .php-build-deps
 # install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# # use production php.ini settings
-# RUN cp /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
-
 # clean tmp files
 RUN rm -rf /tmp/* /var/tmp/*
 
