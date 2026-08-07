@@ -9,8 +9,6 @@ FROM php:${PHP_VERSION}-fpm-alpine AS php
 ARG PHP_REDIS_VERSION=6.3.0
 ARG PHP_SWOOLE_VERSION=5.3.4
 
-RUN apk update
-
 # install general php dependencies
 RUN apk add --no-cache \
     zip \
