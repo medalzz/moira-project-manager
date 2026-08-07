@@ -44,8 +44,7 @@ RUN apk add --no-cache --virtual .php-build-deps \
         simplexml \
         xml \
         pcntl \
-        gd \
-        opcache
+        gd
 
 # install redis
 RUN pecl install redis-${PHP_REDIS_VERSION} \
