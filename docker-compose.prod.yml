@@ -1,0 +1,141 @@
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+      target: nginx
+      args:
+        VITE_API_URL: /api
+    ports:
+      - "80:80"
+    depends_on:
+      php:
+        condition: service_healthy
+    networks:
+      - frontend
+      - backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/ || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+      target: php
+    env_file:
+      - .env.production
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "php-fpm -t || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+      target: php
+    command:
+      - php
+      - artisan
+      - queue:work
+      - --sleep=3
+      - --tries=3
+      - --timeout=90
+      - --max-time=3600
+    env_file:
+      - .env.production
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - backend
+    restart: unless-stopped
+    stop_grace_period: 2m
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+      target: php
+    command: ["php", "artisan", "schedule:work"]
+    env_file:
+      - .env.production
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - backend
+    restart: unless-stopped
+
+  db:
+    image: postgres:18-alpine
+    env_file:
+      - .env.production
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  redis:
+    image: redis:8-alpine
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+      - --requirepass
+      - "${REDIS_PASSWORD}"
+    env_file:
+      - .env.production
+    volumes:
+      - redis_data:/data
+    networks:
+      - backend
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "redis-cli -a \"$${REDIS_PASSWORD}\" ping | grep PONG"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+networks:
+  frontend:
+  backend:
+    internal: true
+
+volumes:
+  postgres_data:
+  redis_data:

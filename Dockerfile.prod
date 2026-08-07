@@ -1,0 +1,107 @@
+# syntax=docker/dockerfile:1
+
+ARG PHP_VERSION=8.5.9
+ARG NODE_VERSION=24.18.1
+
+# -------------------------------------------------------------------
+# Laravel dependencies
+# -------------------------------------------------------------------
+FROM composer:2 AS composer-build
+
+WORKDIR /app
+
+COPY composer.json composer.lock ./
+
+RUN composer install \
+    --no-dev \
+    --no-interaction \
+    --no-progress \
+    --no-scripts \
+    --prefer-dist \
+    --optimize-autoloader
+
+COPY . .
+
+RUN composer dump-autoload \
+    --no-dev \
+    --classmap-authoritative \
+    --no-interaction
+
+# -------------------------------------------------------------------
+# Vue build
+# -------------------------------------------------------------------
+FROM node:${NODE_VERSION}-alpine AS frontend-build
+
+WORKDIR /app/frontend
+
+COPY frontend/package.json frontend/package-lock.json ./
+
+RUN npm ci
+
+COPY frontend/ ./
+
+ARG VITE_API_URL=/api
+ENV VITE_API_URL=${VITE_API_URL}
+
+RUN npm run build
+
+# -------------------------------------------------------------------
+# PHP-FPM application image
+# -------------------------------------------------------------------
+FROM php:${PHP_VERSION}-fpm-alpine AS php
+
+RUN apk add --no-cache \
+        icu-libs \
+        libpq \
+        libzip \
+        oniguruma \
+        su-exec \
+    && apk add --no-cache --virtual .build-dependencies \
+        icu-dev \
+        libpq-dev \
+        libzip-dev \
+        oniguruma-dev \
+    && docker-php-ext-install -j"$(nproc)" \
+        intl \
+        mbstring \
+        opcache \
+        pdo_pgsql \
+        zip \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
+    && apk del .build-dependencies
+
+WORKDIR /var/www/html
+
+COPY --from=composer-build --chown=www-data:www-data /app /var/www/html
+
+COPY docker/php/entrypoint.prod.sh /usr/local/bin/php-entrypoint-prod
+
+RUN chmod +x /usr/local/bin/php-entrypoint-prod \
+    && mkdir -p \
+        storage/framework/cache \
+        storage/framework/sessions \
+        storage/framework/views \
+        storage/logs \
+        bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache
+
+USER www-data
+
+ENTRYPOINT ["php-entrypoint-prod"]
+CMD ["php-fpm", "-F"]
+
+# -------------------------------------------------------------------
+# Nginx image
+# -------------------------------------------------------------------
+FROM nginx:alpine AS nginx
+
+WORKDIR /var/www/html
+
+COPY docker/nginx/production.conf /etc/nginx/conf.d/default.conf
+
+# Laravel public files
+COPY --from=composer-build /app/public /var/www/html/public
+
+# Vue production files
+COPY --from=frontend-build /app/frontend/dist /var/www/html/frontend
