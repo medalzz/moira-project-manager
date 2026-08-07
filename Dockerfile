@@ -1,13 +1,15 @@
 ARG PHP_VERSION=8.5.9
 ARG NGINX_VERSION=1.31.3
+ARG PHP_REDIS_VERSION=6.3.0
+ARG PHP_SWOOLE_VERSION=5.3.4
 
 # --------------------------------------------------
 # PHP
 # --------------------------------------------------
 FROM php:${PHP_VERSION}-fpm-alpine AS php
 
-ARG PHP_REDIS_VERSION=6.3.0
-ARG PHP_SWOOLE_VERSION=5.3.4
+ARG PHP_REDIS_VERSION
+ARG PHP_SWOOLE_VERSION
 
 # install general php dependencies
 RUN apk add --no-cache \
