@@ -1,6 +1,10 @@
 ARG PHP_VERSION=8.5.9
+ARG NGINX_VERSION=1.31.3
 
-FROM php:${PHP_VERSION}-fpm-alpine
+# --------------------------------------------------
+# PHP
+# --------------------------------------------------
+FROM php:${PHP_VERSION}-fpm-alpine AS php
 
 ARG PHP_REDIS_VERSION=6.3.0
 ARG PHP_SWOOLE_VERSION=5.3.4
@@ -66,3 +70,14 @@ RUN rm -rf /tmp/* /var/tmp/*
 WORKDIR /var/www/html
 
 CMD ["php-fpm"]
+
+
+# --------------------------------------------------
+# Nginx
+# --------------------------------------------------
+FROM nginx:${NGINX_VERSION}-alpine AS nginx
+
+COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
+COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
+
+WORKDIR /var/www/html
