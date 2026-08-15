@@ -1,0 +1,140 @@
+ARG PHP_VERSION=8.5.9
+ARG NGINX_VERSION=1.31.3
+ARG NODE_VERSION=24.18.1
+ARG PHP_REDIS_VERSION=6.3.0
+ARG PHP_SWOOLE_VERSION=5.3.4
+
+# -------------------------------------------------------------------
+# Laravel dependencies
+# -------------------------------------------------------------------
+FROM composer:2 AS composer-build
+
+WORKDIR /app
+
+COPY composer.json composer.lock ./
+
+RUN composer install \
+    --no-dev \
+    --no-interaction \
+    --no-progress \
+    --no-scripts \
+    --prefer-dist \
+    --optimize-autoloader
+
+COPY . .
+
+RUN composer dump-autoload \
+    --no-dev \
+    --classmap-authoritative \
+    --no-interaction
+
+# -------------------------------------------------------------------
+# Vue build
+# -------------------------------------------------------------------
+FROM node:${NODE_VERSION}-alpine AS frontend-build
+
+WORKDIR /app/frontend
+
+COPY frontend/package.json frontend/package-lock.json ./
+
+RUN npm ci
+
+COPY frontend/ ./
+
+ARG VITE_API_URL=/api
+ENV VITE_API_URL=${VITE_API_URL}
+
+RUN npm run build
+
+# -------------------------------------------------------------------
+# PHP-FPM
+# -------------------------------------------------------------------
+FROM php:${PHP_VERSION}-fpm-alpine AS php
+
+ARG PHP_REDIS_VERSION
+ARG PHP_SWOOLE_VERSION
+
+# install general php dependencies
+RUN apk add --no-cache \
+    zip \
+    unzip \
+    curl \
+    ca-certificates \
+    nano \
+    bind-tools \
+    icu-libs \
+    libpq \
+    libzip \
+    oniguruma \
+    libpng \
+    libxml2
+
+# install php build dependencies & php extensions
+RUN apk add --no-cache --virtual .php-build-deps \
+        $PHPIZE_DEPS \
+        icu-dev \
+        libpq-dev \
+        libzip-dev \
+        oniguruma-dev \
+        libpng-dev \
+        libxml2-dev \
+    && docker-php-ext-install -j"$(nproc)" \
+        zip \
+        intl \
+        mbstring \
+        pgsql \
+        pdo_pgsql \
+        simplexml \
+        xml \
+        pcntl \
+        gd
+
+# install redis
+RUN pecl install redis-${PHP_REDIS_VERSION} \
+    && docker-php-ext-enable redis
+
+# # install swoole
+# RUN pecl install swoole-${PHP_SWOOLE_VERSION} \
+#     && docker-php-ext-enable swoole
+
+#delete build dependencies
+RUN apk del .php-build-deps
+
+WORKDIR /var/www/html
+
+COPY --from=composer-build --chown=www-data:www-data /app /var/www/html
+
+COPY docker/php/entrypoint.prod.sh /usr/local/bin/php-entrypoint-prod
+
+RUN chmod +x /usr/local/bin/php-entrypoint-prod \
+    && mkdir -p \
+        storage/framework/cache \
+        storage/framework/sessions \
+        storage/framework/views \
+        storage/logs \
+        bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache
+
+# use production php.ini settings
+RUN cp /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
+
+USER www-data
+
+ENTRYPOINT ["php-entrypoint-prod"]
+CMD ["php-fpm", "-F"]
+
+# -------------------------------------------------------------------
+# Nginx
+# -------------------------------------------------------------------
+FROM nginx:${NGINX_VERSION}-alpine AS nginx
+
+WORKDIR /var/www/html
+
+COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
+COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
+
+# laravel public files
+COPY --from=composer-build /app/public /var/www/html/public
+
+# vue production files
+COPY --from=frontend-build /app/frontend/dist /var/www/html/frontend
