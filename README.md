@@ -12,14 +12,9 @@ Project manager focused on Scrum.
 
 ## Dev Environment
 
-Laravel accessible through:
+Project accessible through:
 ```bash
 http://localhost:8000
-```
-
-Vue accessible through:
-```bash
-http://localhost:5173
 ```
 
 ## Build project
