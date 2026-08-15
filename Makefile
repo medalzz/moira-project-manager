@@ -16,8 +16,8 @@ setup:
 		exit 1; \
 	fi
 
-	@if [ ! -f frontend/package.json ]; then \
-		echo "Error: frontend/package.json was not found."; \
+	@if [ ! -f package.json ]; then \
+		echo "Error: package.json was not found."; \
 		exit 1; \
 	fi
 
