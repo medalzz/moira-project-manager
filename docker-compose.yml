@@ -35,11 +35,11 @@ services:
 
   node:
     image: node:24.18.1-alpine
-    working_dir: /var/www/frontend
+    working_dir: /var/www/html
     ports:
       - "5173:5173"
     volumes:
-      - ./frontend:/var/www/frontend
+      - .:/var/www/html
       - ./docker/node/entrypoint.dev.sh:/usr/local/bin/node-entrypoint-dev:ro
     entrypoint: ["/bin/sh", "/usr/local/bin/node-entrypoint-dev"]
     networks:
