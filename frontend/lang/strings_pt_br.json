@@ -4,11 +4,15 @@
     "profile": "Perfil",
     "settings": "Configurações",
     "logout": "Sair",
+    "projects_dashboard": "Painel de Projetos",
+    "projects": "Projetos",
     "profile_information": "Informações do Perfil",
     "name": "Nome",
     "username": "Usuário",
     "email": "Email",
     "language": "Idioma",
-    "projects_dashboard": "Painel de Projetos",
-    "projects": "Projetos"
+    "update_password": "Atualizar Senha",
+    "current_password": "Senha Atual",
+    "new_password": "Nova Senha",
+    "confirm_password": "Confirmar Senha"
 }

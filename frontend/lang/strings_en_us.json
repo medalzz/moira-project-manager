@@ -4,11 +4,15 @@
     "profile": "Profile",
     "settings": "Settings",
     "logout": "Logout",
+    "projects_dashboard": "Projects Dashboard",
+    "projects": "Projects",
     "profile_information": "Profile Information",
     "name": "Name",
     "username": "Username",
     "email": "Email",
     "language": "Language",
-    "projects_dashboard": "Projects Dashboard",
-    "projects": "Projects"
+    "update_password": "Update Password",
+    "current_password": "Current Password",
+    "new_password": "New Password",
+    "confirm_password": "Confirm Password"
 }
