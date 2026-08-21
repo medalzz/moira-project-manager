@@ -4,7 +4,11 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SelectInput from '@/Components/SelectInput.vue';
 import TextInput from '@/Components/TextInput.vue';
+import { setLocale, type Locale } from '@/lang';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 defineProps<{
     mustVerifyEmail?: Boolean;
@@ -19,6 +23,12 @@ const form = useForm({
     email: user.email,
     locale: user.locale,
 });
+
+const submit = () => {
+    form.patch(route('profile.update'), {
+        onSuccess: () => setLocale(form.locale as Locale),
+    });
+};
 </script>
 
 <template>
@@ -33,10 +43,7 @@ const form = useForm({
             </p>
         </header>
 
-        <form
-            @submit.prevent="form.patch(route('profile.update'))"
-            class="mt-6 space-y-6"
-        >
+        <form @submit.prevent="submit" class="mt-6 space-y-6">
             <div>
                 <InputLabel for="name" value="Name" />
 
