@@ -32,5 +32,8 @@
     },
     "optionalDependencies": {
         "@laravel/multiplex": "^0.4.1"
+    },
+    "dependencies": {
+        "vue-i18n": "^11.4.8"
     }
 }
