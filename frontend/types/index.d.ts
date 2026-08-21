@@ -3,6 +3,7 @@ export interface User {
     name: string;
     username: string;
     email: string;
+    locale: 'pt-BR' | 'en-US';
     email_verified_at?: string;
 }
 

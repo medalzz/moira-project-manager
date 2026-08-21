@@ -2,6 +2,7 @@
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SelectInput from '@/Components/SelectInput.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
 
@@ -13,8 +14,10 @@ defineProps<{
 const user = usePage().props.auth.user;
 
 const form = useForm({
+    name: user.name,
     username: user.username,
     email: user.email,
+    locale: user.locale,
 });
 </script>
 
@@ -34,6 +37,22 @@ const form = useForm({
             @submit.prevent="form.patch(route('profile.update'))"
             class="mt-6 space-y-6"
         >
+            <div>
+                <InputLabel for="name" value="Name" />
+
+                <TextInput
+                    id="name"
+                    type="text"
+                    class="mt-1 block w-full"
+                    v-model="form.name"
+                    required
+                    autofocus
+                    autocomplete="name"
+                />
+
+                <InputError class="mt-2" :message="form.errors.name" />
+            </div>
+
             <div>
                 <InputLabel for="username" value="Username" />
 
@@ -63,6 +82,22 @@ const form = useForm({
                 />
 
                 <InputError class="mt-2" :message="form.errors.email" />
+            </div>
+
+            <div>
+                <InputLabel for="locale" value="Language" />
+
+                <SelectInput
+                    id="locale"
+                    class="mt-1 block w-full"
+                    v-model="form.locale"
+                    required
+                >
+                    <option value="pt-BR">Português</option>
+                    <option value="en-US">English</option>
+                </SelectInput>
+
+                <InputError class="mt-2" :message="form.errors.locale" />
             </div>
 
             <div v-if="mustVerifyEmail && user.email_verified_at === null">
