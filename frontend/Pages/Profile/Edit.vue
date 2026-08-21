@@ -5,6 +5,10 @@ import UpdatePasswordForm from './Partials/UpdatePasswordForm.vue';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm.vue';
 import { Head } from '@inertiajs/vue3';
 
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
+
 defineProps<{
     mustVerifyEmail?: boolean;
     status?: string;
@@ -12,14 +16,14 @@ defineProps<{
 </script>
 
 <template>
-    <Head title="Profile" />
+    <Head :title="t('profile')" />
 
     <AuthenticatedLayout>
         <template #header>
             <h2
                 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200"
             >
-                Profile
+                {{ t('profile') }}
             </h2>
         </template>
 

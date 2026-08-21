@@ -35,17 +35,17 @@ const submit = () => {
     <section>
         <header>
             <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                Profile Information
+                {{ t('profile_information') }}
             </h2>
 
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+            <!-- <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
                 Update your account's profile information and email address.
-            </p>
+            </p> -->
         </header>
 
         <form @submit.prevent="submit" class="mt-6 space-y-6">
             <div>
-                <InputLabel for="name" value="Name" />
+                <InputLabel for="name" :value="t('name')" />
 
                 <TextInput
                     id="name"
@@ -61,7 +61,7 @@ const submit = () => {
             </div>
 
             <div>
-                <InputLabel for="username" value="Username" />
+                <InputLabel for="username" :value="t('username')" />
 
                 <TextInput
                     id="username"
@@ -77,7 +77,7 @@ const submit = () => {
             </div>
 
             <div>
-                <InputLabel for="email" value="Email" />
+                <InputLabel for="email" :value="t('email')" />
 
                 <TextInput
                     id="email"
@@ -92,7 +92,7 @@ const submit = () => {
             </div>
 
             <div>
-                <InputLabel for="locale" value="Language" />
+                <InputLabel for="locale" :value="t('language')" />
 
                 <SelectInput
                     id="locale"
@@ -129,7 +129,9 @@ const submit = () => {
             </div>
 
             <div class="flex items-center gap-4">
-                <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
+                <PrimaryButton :disabled="form.processing">{{
+                    t('save')
+                }}</PrimaryButton>
 
                 <Transition
                     enter-active-class="transition ease-in-out"
@@ -141,7 +143,7 @@ const submit = () => {
                         v-if="form.recentlySuccessful"
                         class="text-sm text-gray-600 dark:text-gray-400"
                     >
-                        Saved.
+                        {{ t('saved') }}
                     </p>
                 </Transition>
             </div>

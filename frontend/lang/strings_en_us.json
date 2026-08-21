@@ -1,4 +1,14 @@
 {
+    "save": "Save",
+    "saved": "Saved.",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout",
+    "profile_information": "Profile Information",
+    "name": "Name",
+    "username": "Username",
+    "email": "Email",
+    "language": "Language",
     "projects_dashboard": "Projects Dashboard",
     "projects": "Projects"
 }

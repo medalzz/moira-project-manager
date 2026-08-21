@@ -1,4 +1,14 @@
 {
+    "save": "Salvar",
+    "saved": "Salvo.",
+    "profile": "Perfil",
+    "settings": "Configurações",
+    "logout": "Sair",
+    "profile_information": "Informações do Perfil",
+    "name": "Nome",
+    "username": "Usuário",
+    "email": "Email",
+    "language": "Idioma",
     "projects_dashboard": "Painel de Projetos",
     "projects": "Projetos"
 }
