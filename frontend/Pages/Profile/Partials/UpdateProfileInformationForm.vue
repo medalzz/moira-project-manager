@@ -6,9 +6,6 @@ import SelectInput from '@/Components/SelectInput.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { setLocale, type Locale } from '@/lang';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
-import { useI18n } from 'vue-i18n';
-
-const { t } = useI18n();
 
 defineProps<{
     mustVerifyEmail?: Boolean;
@@ -35,7 +32,7 @@ const submit = () => {
     <section>
         <header>
             <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                {{ t('profile_information') }}
+                {{ $t('profile_information') }}
             </h2>
 
             <!-- <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
@@ -45,7 +42,7 @@ const submit = () => {
 
         <form @submit.prevent="submit" class="mt-6 space-y-6">
             <div>
-                <InputLabel for="name" :value="t('name')" />
+                <InputLabel for="name" :value="$t('name')" />
 
                 <TextInput
                     id="name"
@@ -61,7 +58,7 @@ const submit = () => {
             </div>
 
             <div>
-                <InputLabel for="username" :value="t('username')" />
+                <InputLabel for="username" :value="$t('username')" />
 
                 <TextInput
                     id="username"
@@ -77,7 +74,7 @@ const submit = () => {
             </div>
 
             <div>
-                <InputLabel for="email" :value="t('email')" />
+                <InputLabel for="email" :value="$t('email')" />
 
                 <TextInput
                     id="email"
@@ -92,7 +89,7 @@ const submit = () => {
             </div>
 
             <div>
-                <InputLabel for="locale" :value="t('language')" />
+                <InputLabel for="locale" :value="$t('language')" />
 
                 <SelectInput
                     id="locale"
@@ -130,7 +127,7 @@ const submit = () => {
 
             <div class="flex items-center gap-4">
                 <PrimaryButton :disabled="form.processing">{{
-                    t('save')
+                    $t('save')
                 }}</PrimaryButton>
 
                 <Transition
@@ -143,7 +140,7 @@ const submit = () => {
                         v-if="form.recentlySuccessful"
                         class="text-sm text-gray-600 dark:text-gray-400"
                     >
-                        {{ t('saved') }}
+                        {{ $t('saved') }}
                     </p>
                 </Transition>
             </div>
