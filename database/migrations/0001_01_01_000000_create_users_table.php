@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('locale', 10)->default('pt-BR');
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
