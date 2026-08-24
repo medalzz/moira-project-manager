@@ -4,6 +4,7 @@
     "profile": "Perfil",
     "settings": "Configurações",
     "logout": "Sair",
+    "cancel": "Cancelar",
     "projects_dashboard": "Painel de Projetos",
     "projects": "Projetos",
     "profile_information": "Informações do Perfil",
@@ -11,8 +12,12 @@
     "username": "Usuário",
     "email": "Email",
     "language": "Idioma",
+    "password": "Senha",
     "update_password": "Atualizar Senha",
     "current_password": "Senha Atual",
     "new_password": "Nova Senha",
-    "confirm_password": "Confirmar Senha"
+    "confirm_password": "Confirmar Senha",
+    "delete_account": "Deletar Conta",
+    "delete_account_confirmation": "Tem certeza de que deseja deletar sua conta?",
+    "delete_account_msg": "Esta ação não poderá ser desfeita. Todos os dados serão permanentemente removidos."
 }

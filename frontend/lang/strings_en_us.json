@@ -4,6 +4,7 @@
     "profile": "Profile",
     "settings": "Settings",
     "logout": "Logout",
+    "cancel": "Cancel",
     "projects_dashboard": "Projects Dashboard",
     "projects": "Projects",
     "profile_information": "Profile Information",
@@ -11,8 +12,12 @@
     "username": "Username",
     "email": "Email",
     "language": "Language",
+    "password": "Password",
     "update_password": "Update Password",
     "current_password": "Current Password",
     "new_password": "New Password",
-    "confirm_password": "Confirm Password"
+    "confirm_password": "Confirm Password",
+    "delete_account": "Delete Account",
+    "delete_account_confirmation": "Are you sure you want to delete your account?",
+    "delete_account_msg": "This action cannot be undone. All data will be permanently removed."
 }
