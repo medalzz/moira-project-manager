@@ -34,6 +34,7 @@
         "@laravel/multiplex": "^0.4.1"
     },
     "dependencies": {
+        "@iconify/vue": "^5.0.2",
         "vue-i18n": "^11.4.8"
     }
 }
